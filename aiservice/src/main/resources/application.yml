@@ -27,5 +27,14 @@ rabbitmq:
   routing:
     key: activity.tracking
 
+Gemini:
+  api:
+    url: ${GEMINI_API_URL}
+    key: ${GEMINI_API_KEY}
+
+
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 
 
