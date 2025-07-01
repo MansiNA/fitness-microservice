@@ -28,8 +28,12 @@ This project demonstrates the development of a scalable, secure, and cloud-ready
 - Uses **OAuth 2.0 PKCE** flow for secure frontend authentication  
 - APIs secured via token-based access  
 
-## ▶️ Getting Started
+## 🐇 Running RabbitMQ (Docker)
+Access RabbitMQ UI: http://localhost:15672
+<pre lang="bash"><code> docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:4-management </code></pre>
 
+## ▶️ Getting Started
+  
 ```bash
 # Backend
 ./mvnw clean install
@@ -39,3 +43,4 @@ docker-compose up  # if using Docker for services like RabbitMQ, Keycloak
 cd frontend
 npm install
 npm start
+

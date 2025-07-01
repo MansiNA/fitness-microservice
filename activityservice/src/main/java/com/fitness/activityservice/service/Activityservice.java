@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,9 +28,9 @@ public class Activityservice {
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
 
-    public ActivityResponse trackActivity(ActivityRequest request) {
+    public ActivityResponse trackActivityOld(ActivityRequest request) {
 
-        boolean isValidUser = userValidationService.validateUser(request.getUserId());
+        boolean isValidUser = userValidationService.validateUserold(request.getUserId());
         if(!isValidUser) {
             throw new RuntimeException("Invalid User: " + request.getUserId());
         }
@@ -53,6 +54,33 @@ public class Activityservice {
         }
         return mapToResponse(saveActivity);
 
+    }
+    public Mono<ActivityResponse> trackActivity(ActivityRequest request) {
+        return userValidationService.validateUser(request.getUserId())
+                .flatMap(isValidUser -> {
+                    if (!isValidUser) {
+                        return Mono.error(new RuntimeException("Invalid User: " + request.getUserId()));
+                    }
+
+                    Activity activity = Activity.builder()
+                            .userId(request.getUserId())
+                            .type(request.getType())
+                            .duration(request.getDuration())
+                            .caloriesBurned(request.getCaloriesBurned())
+                            .startTime(request.getStartTime())
+                            .additionalMetrics(request.getAdditionalMetrics())
+                            .build();
+
+                    Activity savedActivity = activityRepository.save(activity);
+
+                    try {
+                        rabbitTemplate.convertAndSend(exchange, routingKey, savedActivity);
+                    } catch (Exception e) {
+                        log.error("Failed to publish activity to RabbitMQ: ", e);
+                    }
+
+                    return Mono.just(mapToResponse(savedActivity));
+                });
     }
 
     private ActivityResponse mapToResponse(Activity activity) {

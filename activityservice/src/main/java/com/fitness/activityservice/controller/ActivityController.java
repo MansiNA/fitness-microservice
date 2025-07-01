@@ -6,6 +6,7 @@ import com.fitness.activityservice.service.Activityservice;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -17,11 +18,13 @@ public class ActivityController {
     private final Activityservice activityService;
 
     @PostMapping
-    public ResponseEntity<ActivityResponse> trackActivity(@RequestBody ActivityRequest request) {
-        return ResponseEntity.ok(activityService.trackActivity(request));
+    public Mono<ResponseEntity<ActivityResponse>> trackActivity(@RequestBody ActivityRequest request) {
+        return activityService.trackActivity(request)
+                .map(ResponseEntity::ok);
     }
 
     @GetMapping
+
     public ResponseEntity<List<ActivityResponse>> getUserActivities(@RequestHeader("X-User-ID") String userId) {
         return ResponseEntity.ok(activityService.getUserActivities(userId));
     }
