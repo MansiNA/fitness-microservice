@@ -26,7 +26,11 @@ This project demonstrates the development of a scalable, secure, and cloud-ready
 
 - Integrated with **Keycloak** for identity and access management  
 - Uses **OAuth 2.0 PKCE** flow for secure frontend authentication  
-- APIs secured via token-based access  
+- APIs secured via token-based access
+**Running Keycloak (Docker)**
+Default credentials: admin / admin
+<pre lang="bash"><code> docker run -p 8181:8080 -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:26.2.5 start-dev</code></pre>
+
 
 ## 🐇 Running RabbitMQ (Docker)
 Access RabbitMQ UI: http://localhost:15672
