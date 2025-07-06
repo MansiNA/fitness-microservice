@@ -18,7 +18,10 @@ public class ActivityController {
     private final Activityservice activityService;
 
     @PostMapping
-    public Mono<ResponseEntity<ActivityResponse>> trackActivity(@RequestBody ActivityRequest request) {
+    public Mono<ResponseEntity<ActivityResponse>> trackActivity(@RequestBody ActivityRequest request, @RequestHeader("X-User-ID") String userId) {
+        if(userId != null) {
+            request.setUserId(userId);
+        }
         return activityService.trackActivity(request)
                 .map(ResponseEntity::ok);
     }
